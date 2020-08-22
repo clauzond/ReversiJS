@@ -24,7 +24,6 @@ const COLOR_WHITE = "#eeeeee";
 const COLOR_BLACK = "#222222";
 const COLOR_TIE = "#aaaaaa";
 
-
 // Game Canvas
 var canv = document.createElement("canvas");
 canv.height = HEIGHT;

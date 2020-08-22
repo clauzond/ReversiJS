@@ -1,6 +1,6 @@
 # TODO.md
 
-### Todo
+### Todo ⏲
 
 - [ ] Add a reset button
 - [ ] Add more information on win (e.g "White cannot plays")
@@ -11,7 +11,7 @@
 	- [ ] Hightlight captured disks before playing
 - [ ] Implement an AI
 
-### Done ✓
+### Done ✔ 
 
 - [x] Game working as intended
     - [x] Grid size tweakable

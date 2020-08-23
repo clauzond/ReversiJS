@@ -63,19 +63,25 @@
 
             function showRules() {
                 optionsContainer.style.display = "none";
+                optionsButton.classList.remove('activeButton');
                 if (rulesContainer.style.display == "none") {
                     rulesContainer.style.display = "block";
+                    rulesButton.classList.add('activeButton');
                 } else {
                     rulesContainer.style.display = "none";
+                    rulesButton.classList.remove('activeButton');
                 }
             }
 
             function showOptions() {
                 rulesContainer.style.display = "none";
+                rulesButton.classList.remove('activeButton');
                 if (optionsContainer.style.display == "none") {
                     optionsContainer.style.display = "flex";
+                    optionsButton.classList.add('activeButton');
                 } else {
                     optionsContainer.style.display = "none";
+                    optionsButton.classList.remove('activeButton');
                 }
             }
 

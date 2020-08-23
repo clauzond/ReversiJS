@@ -2,7 +2,11 @@
 Javascript implementation of the [Reversi strategy board game](https://en.wikipedia.org/wiki/Reversi).
 
 ## How to play ❓
-Simply run index.html.
+### LOCAL
+Simply run index.html
+
+### ONLINE
+Click [here](https://thecsmine.github.io/ReversiJS).
 
 ## Why ❔
 To learn HTML, CSS and JS

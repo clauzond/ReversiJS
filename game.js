@@ -18,7 +18,7 @@ const PLAYERTURN_Y = STROKE * 1.5;
 
 // Colors
 const COLOR_BOARD = "#00AB1A";
-const COLOR_BORDER = "#2FC99A";
+const COLOR_BORDER = "#a87139";
 const COLOR_TILE = "#363636";
 const COLOR_WHITE = "#eeeeee";
 const COLOR_BLACK = "#222222";
@@ -35,9 +35,11 @@ var canvRect = canv.getBoundingClientRect(); // get mouse position relatively to
 var ctx = canv.getContext("2d");
 
 // Game variables
-var playerTurn, diskList, dicPossible;
+var playerTurn, diskList;
 var NumberOfWhite = 0;
 var NumberOfBlack = 0;
+var HIGHLIGHT_POSSIBLE = true;
+var HIGHLIGHT_CAPTURED = true;
 
 // Event handlers
 canv.addEventListener("mousemove", highlightGrid);
@@ -52,29 +54,51 @@ function highlightGrid(/** @type {MouseEvent} */ event) {
     let x = event.clientX - canvRect.left;
     let y = event.clientY - canvRect.top;
 
-    // highlight the current selected square
-    clearHighlight();
-    highlightHoveredDisk(x, y);
+    // highlight the possible disk and/or the captured disks
+    if (HIGHLIGHT_POSSIBLE||HIGHLIGHT_CAPTURED) {
+        // clear previous highlights
+        clearHighlight();
+
+        // calculate possible
+        var row, col;
+        var RowCol = getGridRowCol(x, y);
+        if (RowCol) {
+            [row, col] = RowCol;
+            var disk = diskList[row][col];
+            var capturedList = isTilePossible(disk);
+            var bool = (capturedList.length!=0);
+        } else {
+            var disk = undefined;
+            var bool = false;
+            var capturedList = [];
+        }
+    }
+
+    if (HIGHLIGHT_POSSIBLE&&bool) {
+        highlightHovered(disk);
+    }
+    if (HIGHLIGHT_CAPTURED&&bool) {
+        highlightCaptured(capturedList);
+    }
+    
 
 }
 
 function clearHighlight() {
     for (let row of diskList) {
         for (let disk of row) {
-            disk.highlight_state = false
+            disk.highlight_state = false;
         }
     }
 }
 
-function highlightHoveredDisk(x, y) {
-    var row, col;
-    var RowCol = getGridRowCol(x, y);
-    if (RowCol) {
-        [row, col] = RowCol;
-        var disk = diskList[row][col]
-        if (isTilePossible(disk)) {
-            disk.highlight_state = true
-        }
+function highlightHovered(disk) {
+    disk.highlight_state = true;
+}
+
+function highlightCaptured(capturedList) {
+    for (let disk of capturedList) {
+        disk.highlight_state = true;
     }
 }
 
@@ -90,9 +114,11 @@ function mouseClick(/** @type {MouseEvent} */ event) {
     if (RowCol) {
         [row, col] = RowCol;
         var disk = diskList[row][col];
-        if (isTilePossible(disk)) {
+        var capturedList = isTilePossible(disk);
+        var bool = (capturedList!=0);
+        if (bool) {
             disk.state = playerTurn;
-            playTurn();
+            playTurn(capturedList);
             nextTurn();
         }
     }
@@ -192,6 +218,8 @@ function drawWinText(player) {
     var txt;
     if (player == "tie") {
         txt = "IT'S A TIE !"
+    } else if (player == "reset") {
+        txt = "GAME RESETTING"
     } else {
         txt = (player == "white" ? "WHITE WON !" : "BLACK WON !");
     }
@@ -258,70 +286,71 @@ function Disk(row, col) {
 function isTilePossible(disk) {
     if (disk.state != null)
     {
-        return(false)
+        return([])
     }
-    dicPossible = { 'row': disk.row, 'col': disk.col, 'list': [] }; // reset dicPossible
+
+    var capturedList = [];
+
     for (let i = -1; i <= 1; i++) {
         for (let j = -1; j <= 1; j++) {
             if (!((i == 0) && (j == 0))) {
-                verifyTile_withDirection(disk, i, j) // add possible disks in dicPossible['list']
+                // add captured disks to capturedList
+                capturedList = capturedList.concat(verifyTile_withDirection(disk, i, j))
             }
         }
     }
-    return (dicPossible['list'].length != 0)
+    return (capturedList)
 }
 
 function verifyTile_withDirection(disk, offset_row, offset_col) {
-    let list = []; // disk list to add to dicPossible['list'] at the end
+    let list = []; // disk list to add to capturedList
     let yourColor = (playerTurn == "white") ? "white" : "black";
     let otherColor = (playerTurn == "white") ? "black" : "white";
     let thisRow = disk.row + offset_row;
     let thisCol = disk.col + offset_col;
 
-    while ((0 <= thisRow) && (thisRow < GRID_SIZE) && (0 <= thisCol) && (thisCol < GRID_SIZE) && (diskList[thisRow][thisCol].state == otherColor)) { // go until blank or you-colored disk
+    // capture until blank or you-colored disk
+    while ((0 <= thisRow) && (thisRow < GRID_SIZE) && (0 <= thisCol) && (thisCol < GRID_SIZE) && (diskList[thisRow][thisCol].state == otherColor)) { 
         list.push(diskList[thisRow][thisCol]);
         thisRow += offset_row;
         thisCol += offset_col;
     }
 
-
-    if ((0 <= thisRow) && (thisRow < GRID_SIZE) && (0 <= thisCol) && (thisCol <= GRID_SIZE - 1) && (diskList[thisRow][thisCol].state == yourColor)) { // if your disk is on the other side
-        for (let k = 0; k < list.length; k++) {
-            dicPossible['list'].push(list[k]);
-        }
+    // if your disk is on the other side, you can capture
+    if ((0 <= thisRow) && (thisRow < GRID_SIZE) && (0 <= thisCol) && (thisCol <= GRID_SIZE - 1) && (diskList[thisRow][thisCol].state == yourColor)) {
+        return(list)
+    } else {
+        return([])
     }
 
 }
 
-function playTurn() {
-    var d;
+function playTurn(capturedList) {
+    var p;
     if (playerTurn == "white") {
         NumberOfWhite += 1;
-        d = 1;
+        p = 1;
     } else {
         NumberOfBlack += 1;
-        d = -1;
+        p = -1;
     }
-    for (let disk of dicPossible['list']) {
+    for (let disk of capturedList) {
         disk.state = playerTurn;
-        NumberOfWhite += d;
-        NumberOfBlack -= d;
+        NumberOfWhite += p;
+        NumberOfBlack -= p;
     }
 
     clearHighlight();
-    dicPossible = { 'row': null, 'col': null, 'list': [] }; // reset dicPossible
 }
 
 function isThereAvailableTile() {
     for (let i=0; i<GRID_SIZE; i++) {
         for (let j=0; j<GRID_SIZE; j++) {
-            if (isTilePossible(diskList[i][j])) {
-                dicPossible = { 'row': null, 'col': null, 'list': [] }
+            if (isTilePossible(diskList[i][j]).length != 0) {
                 return(true)
             }
         }
     }
-    dicPossible = { 'row': null, 'col': null, 'list': [] }
     return(false)
 }
 
@@ -343,7 +372,6 @@ function checkForWin() {
 function newGame() {
     playerTurn = "black";
     diskList = [];
-    dicPossible = { 'row': null, 'col': null, 'list': [] };
     for (let i = 0; i < GRID_SIZE; i++) { // row
         diskList[i] = []
         for (let j = 0; j < GRID_SIZE; j++) { // column
@@ -367,11 +395,24 @@ function stopGame() {
     clearInterval(runningLoop);
 }
 
+function resetGame() {
+    stopGame();
+    drawWinText("reset");
+    setTimeout(startLoop, 100);
+    setTimeout(newGame, 100);
+}
+
 // Start a new game
 newGame();
 
 // Set up the game loop
-var runningLoop = setInterval(loop, 1000 / FPS);
+function startLoop() {
+    runningLoop = setInterval(loop, 1000/FPS);
+}
+
+var runningLoop;
+startLoop();
+
 
 function loop() {
     drawBoard(); // draw background

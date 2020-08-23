@@ -39,12 +39,14 @@ var ctx = canv.getContext("2d");
 var playerTurn, diskList;
 var NumberOfWhite = 0;
 var NumberOfBlack = 0;
-var HIGHLIGHT_POSSIBLE = () => {return document.getElementById("highlightPossible").checked};
+var HIGHLIGHT_HOVER = () => {return document.getElementById("highlightHover").checked};
 var HIGHLIGHT_CAPTURED = () => {return document.getElementById("highlightCaptured").checked};
+var HIGHLIGHT_POSSIBLE = () => {return document.getElementById("highlightPossible").checked};
 
 // Event handlers
 canv.addEventListener("mousemove", highlightGrid);
-canv.addEventListener("click", mouseClick)
+canv.addEventListener("click", mouseClick);
+canv.addEventListener("mouseleave", clearHighlight);
 
 function highlightGrid(/** @type {MouseEvent} */ event) {
     if (!playerTurn) {
@@ -57,7 +59,7 @@ function highlightGrid(/** @type {MouseEvent} */ event) {
     let y = event.clientY - canvRect.top - PADDING;
 
     // highlight the possible disk and/or the captured disks
-    if (HIGHLIGHT_POSSIBLE()||HIGHLIGHT_CAPTURED()) {
+    if (HIGHLIGHT_HOVER()||HIGHLIGHT_CAPTURED()||HIGHLIGHT_POSSIBLE()) {
         // clear previous highlights
         clearHighlight();
 
@@ -76,11 +78,14 @@ function highlightGrid(/** @type {MouseEvent} */ event) {
         }
     }
 
-    if (HIGHLIGHT_POSSIBLE()&&bool) {
+    if (HIGHLIGHT_HOVER()&&bool) {
         highlightHovered(disk);
     }
     if (HIGHLIGHT_CAPTURED()&&bool) {
         highlightCaptured(capturedList);
+    }
+    if (HIGHLIGHT_POSSIBLE()) {
+        highlightPossible();
     }
     
 
@@ -104,12 +109,26 @@ function highlightCaptured(capturedList) {
     }
 }
 
+function highlightPossible() {
+    var possibleList = [];
+    for (let row of diskList) {
+        for (let disk of row) {
+            if (isTilePossible(disk).length!=0) {
+                possibleList.push(disk);
+            }
+        }
+    }
+    for (let disk of possibleList) {
+        disk.highlight_state = true;
+    }
+}
+
 function mouseClick(/** @type {MouseEvent} */ event) {
     if (!playerTurn) {
         return
     }
 
-    console.log(HIGHLIGHT_POSSIBLE());
+    console.log(HIGHLIGHT_HOVER());
 
     var canvRect = canv.getBoundingClientRect(); // get mouse position relatively to the canvas
     // get mouse position relative to the canvas
@@ -281,8 +300,9 @@ function Disk(row, col) {
     }
 
     this.highlight = () => {
+        var alpha = document.getElementById("alpha").value;
         if (this.highlight_state && playerTurn) {
-            drawDisk(this.x + CELL / 2, this.y + CELL / 2, getColor(playerTurn), 0.3);
+            drawDisk(this.x + CELL / 2, this.y + CELL / 2, getColor(playerTurn), alpha);
         }
     }
 

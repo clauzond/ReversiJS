@@ -29,5 +29,6 @@ To learn HTML, CSS and JS
 - [x] Add a "show rules" button 📖
 - [x] Add a reset button 🔁
 - [x] Add an option button ⚙
-	- [x] Hightlight possible moves 🌟
+	- [x] Hightlight mousehover 🌟
 	- [x] Hightlight captured disks before playing ✨
+    - [x] Highlight possible moves ✨🌟✨

@@ -16,19 +16,29 @@
                 <button class="button" id="github">GitHub</button>
             </a>
         </div>
-        <div id="optionsContainer" align="center">
+        <div id="optionsContainer" align="left">
             <div>
-                <input type="checkbox" id="highlightPossible" name="highlightPossible" checked>
-                <label for="highlightPossible">Highlight possible moves ?</label>
+                <input type="checkbox" id="highlightHover" checked>
+                <label for="highlightHover">Highlight possible moves on mousehover</label>
             </div>
 
             <div>
-                <input type="checkbox" id="highlightCaptured" name="highlightCaptured" checked>
-                <label for="highlightCaptured">Highlight captured disks ?</label>
+                <input type="checkbox" id="highlightCaptured" checked>
+                <label for="highlightCaptured">Highlight captured disks</label>
+            </div>
+
+            <div>
+                <input type="checkbox" id="highlightPossible">
+                <label for="highlightPossible">Highlight all possible moves</label>
+            </div>
+
+            <div>
+                <input type="range" id="alpha" min="0.2" max="0.7" step="any" value="0.3">
+                <label for="alpha">Highlight's alpha</label>
             </div>
 
         </div>
-        <div id="rulesContainer">
+        <div id="rulesContainer" align="left">
             <h1>Playing the Game</h1>
             <p>On your turn, place one piece on the board with your color facing up. </p>
             <p>You must place the piece in such a way that one or more opponent pieces are trapped between
@@ -64,6 +74,7 @@
             function showRules() {
                 optionsContainer.style.display = "none";
                 optionsButton.classList.remove('activeButton');
+
                 if (rulesContainer.style.display == "none") {
                     rulesContainer.style.display = "block";
                     rulesButton.classList.add('activeButton');
@@ -76,6 +87,7 @@
             function showOptions() {
                 rulesContainer.style.display = "none";
                 rulesButton.classList.remove('activeButton');
+
                 if (optionsContainer.style.display == "none") {
                     optionsContainer.style.display = "flex";
                     optionsButton.classList.add('activeButton');

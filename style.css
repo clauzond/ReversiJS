@@ -25,6 +25,84 @@ p {
     font-weight: 100;
 }
 
+input, label {
+    cursor: pointer;
+}
+
+input[type=checkbox]+label {
+    display: block;
+    margin: 0.2em;
+    cursor: pointer;
+    padding: 0.2em;
+}
+
+input[type=checkbox] {
+    display: none;
+}
+
+input[type=checkbox]+label:before {
+    content: "\2714";
+    border: 0.1em solid #000;
+    border-radius: 2em;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    padding-left: 0.3em;
+    padding-bottom: 0.5em;
+    margin-right: 0.3em;
+    color: transparent;
+    transition: .15s;
+}
+
+input[type=checkbox]+label:active:before {
+    transform: scale(0);
+}
+
+input[type=checkbox]:checked+label:before {
+    background-color: MediumSeaGreen;
+    border-color: MediumSeaGreen;
+    color: #ffffff;
+}
+
+input[type=checkbox]:disabled+label:before {
+    transform: scale(1);
+    border-color: #aaa;
+}
+
+input[type=checkbox]:checked:disabled+label:before {
+    transform: scale(1);
+    background-color: #bfb;
+    border-color: #bfb;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    width: 50%;
+    height: 15px;
+    border-radius: 5px;  
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.4;
+    -webkit-transition: .2s;
+    transition: .2s;
+  }
+  
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%; 
+    background: #4CAF50;
+    cursor: pointer;
+  }
+  
+
+  input[type=range]:hover {
+      opacity: 1;
+      transition: .2s;
+  }
+
 .button {
     outline: none;
     color: #479a49 !important;
@@ -47,6 +125,7 @@ p {
     box-shadow: 4px 4px 6px 4px rgba(0, 0, 0, 0.4);
     transition: all 0.3s ease 0s;
 }
+
 #myCanvas {
     padding: 20px;
     order: 0;
@@ -68,11 +147,3 @@ p {
     padding: 20px;
     line-height: 40px;
 }
-
-#reset {}
-
-#rules {}
-
-#options {}
-
-#github {}

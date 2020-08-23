@@ -1,22 +1,17 @@
 # Reversi ⚪⚫
-Javascript implementation of the [Reversi strategy board game](https://en.wikipedia.org/wiki/Reversi)
+Javascript implementation of the [Reversi strategy board game](https://en.wikipedia.org/wiki/Reversi).
 
-## How to play ❔
-Simply run index.html. Nothing more than that.
+## How to play ❓
+### Simply run index.html. 
+##### Nothing more than that.
 
+## Why ❔
+### To learn HTML, CSS and JS
 
 ## Todo ⏲
 
-
-- [ ] Add a reset button 🔁
-    - [x] Reset function
-- [ ] Add more information on win (e.g "White cannot plays") 🎭
-- [ ] Change colors, add background image (repeating), add image for disks 🖼
+- [ ] Add more information on win (e.g "White cannot play") 🎭
 - [ ] Find a pattern for odd GRID_SIZE 5️⃣7️⃣9️⃣
-- [ ] Add a "show rules" button 📖
-- [ ] Add an option button ⚙
-	- [x] Hightlight possible moves 🌟
-	- [x] Hightlight captured disks before playing ✨
 - [ ] Implement an AI 🤖
 
 ## Done ✔ 
@@ -25,3 +20,9 @@ Simply run index.html. Nothing more than that.
     - [x] Grid size tweakable 🔳
     - [x] Highlighting working as intended ⭐
     - [x] Rules implemented and working as intended 📕
+- [x] Change colors
+- [x] Add a "show rules" button 📖
+- [x] Add a reset button 🔁
+- [x] Add an option button ⚙
+	- [x] Hightlight possible moves 🌟
+	- [x] Hightlight captured disks before playing ✨

@@ -1,10 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>REVERSI</title>
-</head>
-<body>
-    <script src="game.js"></script>
-</body>
+
+    <head>
+        <meta charset="UTF-8">
+        <title>ReversiJS</title>
+        <link href="style.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <div id="buttonContainer" align="center">
+            <button class="button" id="reset">Reset</button>
+            <button class="button" id="rules">Rules</button>
+            <button class="button" id="options">Options</button>
+            <a href="https://github.com/thecsmine/ReversiJS" target="_blank">
+                <button class="button" id="github">GitHub</button>
+            </a>
+        </div>
+        <div id="optionsContainer" align="center">
+            <div>
+                <input type="checkbox" id="highlightPossible" name="highlightPossible" checked>
+                <label for="highlightPossible">Highlight possible moves ?</label>
+            </div>
+
+            <div>
+                <input type="checkbox" id="highlightCaptured" name="highlightCaptured" checked>
+                <label for="highlightCaptured">Highlight captured disks ?</label>
+            </div>
+
+        </div>
+        <div id="rulesContainer">
+            <h1>Playing the Game</h1>
+            <p>On your turn, place one piece on the board with your color facing up. </p>
+            <p>You must place the piece in such a way that one or more opponent pieces are trapped between
+                two of your pieces. </p>
+            <p>You then turn over all of the opponent pieces trapped in the row between your pieces so they become your
+                color. </p>
+            <p>This is called “capturing” your opponent’s pieces. You can capture rows diagonally, horizontally or
+                vertically. </p>
+            <p>You may capture more than one row of pieces at the same time.</p>
+            <p>If you do not have a legal move, you must pass your turn. </p>
+
+            <h1>Ending the Game</h1>
+            <p>The game ends when all squares are filled in or when neither player has a legal move. </p>
+
+            <h1>Winning the Game </h1>
+            <p>The player who has the most pieces turned to their color at the end of the game is the winner.</p>
+
+        </div>
+        <canvas id="myCanvas"> </canvas>
+        <script src="game.js"></script>
+        <script>
+            var resetButton = document.getElementById("reset");
+            var rulesButton = document.getElementById("rules");
+            var optionsButton = document.getElementById("options");
+            var githubButton = document.getElementById("github");
+            var rulesContainer = document.getElementById("rulesContainer")
+            var optionsContainer = document.getElementById("optionsContainer")
+
+            function _reset() {
+                resetGame();
+            }
+
+            function showRules() {
+                optionsContainer.style.display = "none";
+                if (rulesContainer.style.display == "none") {
+                    rulesContainer.style.display = "block";
+                } else {
+                    rulesContainer.style.display = "none";
+                }
+            }
+
+            function showOptions() {
+                rulesContainer.style.display = "none";
+                if (optionsContainer.style.display == "none") {
+                    optionsContainer.style.display = "flex";
+                } else {
+                    optionsContainer.style.display = "none";
+                }
+            }
+
+            resetButton.onclick = _reset;
+            rulesButton.onclick = showRules;
+            optionsButton.onclick = showOptions;
+            rulesContainer.style.display = "none";
+            optionsContainer.style.display = "none";
+
+        </script>
+    </body>
+
 </html>

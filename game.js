@@ -5,7 +5,7 @@ const WIDTH = 640;
 const GRID_SIZE = 8; // number of rows and columns
 
 const CELL = WIDTH / (GRID_SIZE + 2); // size of cell ; 1 cell blank on left and right
-const STROKE = CELL / 5; // stroke width (stroke=contour)
+const STROKE = CELL / 10; // stroke width (stroke=contour)
 const TILE_STROKE = CELL / 15;
 const DOT = STROKE; // dot radius
 
@@ -16,8 +16,10 @@ const SCORE_Y = MARGIN - STROKE;
 const PLAYERTURN_X = WIDTH / 2;
 const PLAYERTURN_Y = STROKE * 1.5;
 
+const PADDING = 20; // padding in style.css - #myCanvas
+
 // Colors
-const COLOR_BOARD = "#00AB1A";
+const COLOR_BOARD = "#2C5F2D";
 const COLOR_BORDER = "#a87139";
 const COLOR_TILE = "#363636";
 const COLOR_WHITE = "#eeeeee";
@@ -25,11 +27,10 @@ const COLOR_BLACK = "#222222";
 const COLOR_TIE = "#aaaaaa";
 
 // Game Canvas
-var canv = document.createElement("canvas");
+var canv = document.getElementById("myCanvas");
 canv.height = HEIGHT;
 canv.width = WIDTH;
 document.body.appendChild(canv);
-var canvRect = canv.getBoundingClientRect(); // get mouse position relatively to the canvas
 
 // Context
 var ctx = canv.getContext("2d");
@@ -38,8 +39,8 @@ var ctx = canv.getContext("2d");
 var playerTurn, diskList;
 var NumberOfWhite = 0;
 var NumberOfBlack = 0;
-var HIGHLIGHT_POSSIBLE = true;
-var HIGHLIGHT_CAPTURED = true;
+var HIGHLIGHT_POSSIBLE = () => {return document.getElementById("highlightPossible").checked};
+var HIGHLIGHT_CAPTURED = () => {return document.getElementById("highlightCaptured").checked};
 
 // Event handlers
 canv.addEventListener("mousemove", highlightGrid);
@@ -50,12 +51,13 @@ function highlightGrid(/** @type {MouseEvent} */ event) {
         return
     }
 
+    var canvRect = canv.getBoundingClientRect(); // get mouse position relatively to the canvas
     // get mouse position relative to the canvas
-    let x = event.clientX - canvRect.left;
-    let y = event.clientY - canvRect.top;
+    let x = event.clientX - canvRect.left - PADDING;
+    let y = event.clientY - canvRect.top - PADDING;
 
     // highlight the possible disk and/or the captured disks
-    if (HIGHLIGHT_POSSIBLE||HIGHLIGHT_CAPTURED) {
+    if (HIGHLIGHT_POSSIBLE()||HIGHLIGHT_CAPTURED()) {
         // clear previous highlights
         clearHighlight();
 
@@ -74,10 +76,10 @@ function highlightGrid(/** @type {MouseEvent} */ event) {
         }
     }
 
-    if (HIGHLIGHT_POSSIBLE&&bool) {
+    if (HIGHLIGHT_POSSIBLE()&&bool) {
         highlightHovered(disk);
     }
-    if (HIGHLIGHT_CAPTURED&&bool) {
+    if (HIGHLIGHT_CAPTURED()&&bool) {
         highlightCaptured(capturedList);
     }
     
@@ -106,9 +108,13 @@ function mouseClick(/** @type {MouseEvent} */ event) {
     if (!playerTurn) {
         return
     }
+
+    console.log(HIGHLIGHT_POSSIBLE());
+
+    var canvRect = canv.getBoundingClientRect(); // get mouse position relatively to the canvas
     // get mouse position relative to the canvas
-    let x = event.clientX - canvRect.left;
-    let y = event.clientY - canvRect.top;
+    let x = event.clientX - canvRect.left - PADDING;
+    let y = event.clientY - canvRect.top - PADDING;
 
     var RowCol = getGridRowCol(x, y);
     if (RowCol) {
@@ -232,7 +238,7 @@ function drawWinText(player) {
     ctx.font = "48px Garamond";
     ctx.textAlign = "center";
     ctx.textBaseline = "alphabetic"
-    var score = "WHITE " + NumberOfWhite.toString() + " | " + NumberOfBlack.toString() + " BLACK";
+    var score = "WHITE " + NumberOfWhite.toString() + " ¤ " + NumberOfBlack.toString() + " BLACK";
     ctx.strokeText(score, SCORE_X, SCORE_Y, WIDTH);
 
     ctx.fillStyle = getColor(player);
@@ -397,9 +403,8 @@ function stopGame() {
 
 function resetGame() {
     stopGame();
-    drawWinText("reset");
-    setTimeout(startLoop, 100);
-    setTimeout(newGame, 100);
+    startLoop();
+    newGame();
 }
 
 // Start a new game

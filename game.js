@@ -128,8 +128,6 @@ function mouseClick(/** @type {MouseEvent} */ event) {
         return
     }
 
-    console.log(HIGHLIGHT_HOVER());
-
     var canvRect = canv.getBoundingClientRect(); // get mouse position relatively to the canvas
     // get mouse position relative to the canvas
     let x = event.clientX - canvRect.left - PADDING;

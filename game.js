@@ -141,8 +141,7 @@ function mouseClick(/** @type {MouseEvent} */ event) {
         var bool = (capturedList!=0);
         if (bool) {
             disk.state = playerTurn;
-            playTurn(capturedList);
-            nextTurn();
+            playTurn(capturedList, event);
         }
     }
 }
@@ -349,7 +348,7 @@ function verifyTile_withDirection(disk, offset_row, offset_col) {
 
 }
 
-function playTurn(capturedList) {
+function playTurn(capturedList, event) {
     var p;
     if (playerTurn == "white") {
         NumberOfWhite += 1;
@@ -365,6 +364,8 @@ function playTurn(capturedList) {
     }
 
     clearHighlight();
+    nextTurn();
+    highlightGrid(event);
 }
 
 function isThereAvailableTile() {

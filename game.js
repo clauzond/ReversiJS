@@ -32,21 +32,30 @@ canv.height = HEIGHT;
 canv.width = WIDTH;
 document.body.appendChild(canv);
 
+// Other elements
+// infoContainer = document.getElementById("infoContainer");
+
 // Context
 var ctx = canv.getContext("2d");
 
 // Game variables
-var playerTurn, diskList;
+var playerTurn, diskList, moveList;
 var NumberOfWhite = 0;
 var NumberOfBlack = 0;
-var HIGHLIGHT_HOVER = () => {return document.getElementById("highlightHover").checked};
-var HIGHLIGHT_CAPTURED = () => {return document.getElementById("highlightCaptured").checked};
-var HIGHLIGHT_POSSIBLE = () => {return document.getElementById("highlightPossible").checked};
+var HIGHLIGHT_HOVER = () => { return document.getElementById("highlightHover").checked };
+var HIGHLIGHT_CAPTURED = () => { return document.getElementById("highlightCaptured").checked };
+var HIGHLIGHT_POSSIBLE = () => { return document.getElementById("highlightPossible").checked };
 
 // Event handlers
 canv.addEventListener("mousemove", highlightGrid);
 canv.addEventListener("click", mouseClick);
 canv.addEventListener("mouseleave", clearHighlight);
+
+function registerMove(row, col) {
+    const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H"];
+    const moveName = alphabet[col]+""+row;
+    moveList.push(moveName);
+}
 
 function highlightGrid(/** @type {MouseEvent} */ event) {
     if (!playerTurn) {
@@ -59,7 +68,7 @@ function highlightGrid(/** @type {MouseEvent} */ event) {
     let y = event.clientY - canvRect.top - PADDING;
 
     // highlight the possible disk and/or the captured disks
-    if (HIGHLIGHT_HOVER()||HIGHLIGHT_CAPTURED()||HIGHLIGHT_POSSIBLE()) {
+    if (HIGHLIGHT_HOVER() || HIGHLIGHT_CAPTURED() || HIGHLIGHT_POSSIBLE()) {
         // clear previous highlights
         clearHighlight();
 
@@ -70,7 +79,7 @@ function highlightGrid(/** @type {MouseEvent} */ event) {
             [row, col] = RowCol;
             var disk = diskList[row][col];
             var capturedList = isTilePossible(disk);
-            var bool = (capturedList.length!=0);
+            var bool = (capturedList.length != 0);
         } else {
             var disk = undefined;
             var bool = false;
@@ -78,16 +87,16 @@ function highlightGrid(/** @type {MouseEvent} */ event) {
         }
     }
 
-    if (HIGHLIGHT_HOVER()&&bool) {
+    if (HIGHLIGHT_HOVER() && bool) {
         highlightHovered(disk);
     }
-    if (HIGHLIGHT_CAPTURED()&&bool) {
+    if (HIGHLIGHT_CAPTURED() && bool) {
         highlightCaptured(capturedList);
     }
     if (HIGHLIGHT_POSSIBLE()) {
         highlightPossible();
     }
-    
+
 
 }
 
@@ -113,7 +122,7 @@ function highlightPossible() {
     var possibleList = [];
     for (let row of diskList) {
         for (let disk of row) {
-            if (isTilePossible(disk).length!=0) {
+            if (isTilePossible(disk).length != 0) {
                 possibleList.push(disk);
             }
         }
@@ -138,10 +147,11 @@ function mouseClick(/** @type {MouseEvent} */ event) {
         [row, col] = RowCol;
         var disk = diskList[row][col];
         var capturedList = isTilePossible(disk);
-        var bool = (capturedList!=0);
+        var bool = (capturedList != 0);
         if (bool) {
             disk.state = playerTurn;
             playTurn(capturedList, event);
+            registerMove(row, col);
         }
     }
 }
@@ -236,15 +246,21 @@ function drawText() {
     ctx.fillText(turn, PLAYERTURN_X, PLAYERTURN_Y, WIDTH);
 }
 
-function drawWinText(player) {
-    var txt;
+function drawWinText(player, winCondition, playerTurn) {
+    let screenText, infoText, winSentence;
+
+    let x = playerTurn[0].toUpperCase() + playerTurn.substring(1);
+    infoText = "Game ended. ";
+    infoText += (winCondition == "boardFull" ? "The board is full. " : x+" cannot place any disk. ");
+
     if (player == "tie") {
-        txt = "IT'S A TIE !"
-    } else if (player == "reset") {
-        txt = "GAME RESETTING"
+        screenText = "IT'S A TIE !";
+        infoText += "It's a tie.";
     } else {
-        txt = (player == "white" ? "WHITE WON !" : "BLACK WON !");
+        screenText = (player == "white" ? "WHITE WON !" : "BLACK WON !");
+        infoText += (player == "white" ? "White won." : "Black won.")
     }
+    overwriteGameInfo(infoText);
 
     drawBoard();
     drawGrid();
@@ -260,7 +276,8 @@ function drawWinText(player) {
     ctx.fillStyle = getColor(player);
     ctx.textAlign = "center";
     ctx.textBaseline = "hanging";
-    ctx.fillText(txt, PLAYERTURN_X, PLAYERTURN_Y, WIDTH);
+    ctx.fillText(screenText, PLAYERTURN_X, PLAYERTURN_Y, WIDTH);
+
 }
 
 function getColor(playerTurn) {
@@ -307,9 +324,8 @@ function Disk(row, col) {
 
 // Game rules
 function isTilePossible(disk) {
-    if (disk.state != null)
-    {
-        return([])
+    if (disk.state != null) {
+        return ([])
     }
 
     var capturedList = [];
@@ -333,7 +349,7 @@ function verifyTile_withDirection(disk, offset_row, offset_col) {
     let thisCol = disk.col + offset_col;
 
     // capture until blank or you-colored disk
-    while ((0 <= thisRow) && (thisRow < GRID_SIZE) && (0 <= thisCol) && (thisCol < GRID_SIZE) && (diskList[thisRow][thisCol].state == otherColor)) { 
+    while ((0 <= thisRow) && (thisRow < GRID_SIZE) && (0 <= thisCol) && (thisCol < GRID_SIZE) && (diskList[thisRow][thisCol].state == otherColor)) {
         list.push(diskList[thisRow][thisCol]);
         thisRow += offset_row;
         thisCol += offset_col;
@@ -341,15 +357,15 @@ function verifyTile_withDirection(disk, offset_row, offset_col) {
 
     // if your disk is on the other side, you can capture
     if ((0 <= thisRow) && (thisRow < GRID_SIZE) && (0 <= thisCol) && (thisCol <= GRID_SIZE - 1) && (diskList[thisRow][thisCol].state == yourColor)) {
-        return(list)
+        return (list)
     } else {
-        return([])
+        return ([])
     }
 
 }
 
 function playTurn(capturedList, event) {
-    var p;
+    let p, sum=0;
     if (playerTurn == "white") {
         NumberOfWhite += 1;
         p = 1;
@@ -361,42 +377,62 @@ function playTurn(capturedList, event) {
         disk.state = playerTurn;
         NumberOfWhite += p;
         NumberOfBlack -= p;
+        sum += 1;
     }
+
+    let s = (sum==1 ? "" : "s");
+    let ve = (sum==1 ? "s" : "ve");
+    let sentence = sum+" disk"+s+" ha"+ve+" been captured."
 
     clearHighlight();
     nextTurn();
     highlightGrid(event);
+    overwriteGameInfo(sentence);
+    checkForWin(playerTurn);
 }
 
 function isThereAvailableTile() {
-    for (let i=0; i<GRID_SIZE; i++) {
-        for (let j=0; j<GRID_SIZE; j++) {
+    for (let i = 0; i < GRID_SIZE; i++) {
+        for (let j = 0; j < GRID_SIZE; j++) {
             if (isTilePossible(diskList[i][j]).length != 0) {
-                return(true)
+                return (true)
             }
         }
     }
-    return(false)
+    return (false)
 }
 
-function checkForWin() {
-    if ((NumberOfWhite + NumberOfBlack == GRID_SIZE ** 2)||(!isThereAvailableTile())) {
-        if (NumberOfBlack > NumberOfWhite) {
-            stopGame();
-            drawWinText("black");
-        } else if (NumberOfWhite > NumberOfBlack) {
-            stopGame();
-            drawWinText("white")
-        } else {
-            stopGame();
-            drawWinText("tie");
-        }
+function checkForWin(playerTurn) {
+    let winCondition;
+    if (NumberOfWhite + NumberOfBlack == GRID_SIZE ** 2) {
+        winCondition = "boardFull";
+    } else if (!isThereAvailableTile()) {
+        winCondition = "noAvailableTile"
+    } else {
+        return
     }
+
+    if (NumberOfBlack > NumberOfWhite) {
+        stopGame();
+        drawWinText(player="black", winCondition=winCondition, playerTurn=playerTurn)
+    } else if (NumberOfWhite > NumberOfBlack) {
+        stopGame();
+        drawWinText(player="white", winCondition=winCondition, playerTurn=playerTurn)
+    } else {
+        stopGame();
+        drawWinText(player="tie", winCondition=winCondition, playerTurn=playerTurn);
+    }
+
+}
+
+function overwriteGameInfo(text) {
+    infoContainer.innerHTML = text;
 }
 
 function newGame() {
     playerTurn = "black";
     diskList = [];
+    moveList = [];
     for (let i = 0; i < GRID_SIZE; i++) { // row
         diskList[i] = []
         for (let j = 0; j < GRID_SIZE; j++) { // column
@@ -404,12 +440,12 @@ function newGame() {
         }
     }
 
-    m = Math.floor(GRID_SIZE/2)-1;
+    m = Math.floor(GRID_SIZE / 2) - 1;
 
     diskList[m][m].state = "white";
-    diskList[m+1][m+1].state = "white";
-    diskList[m][m+1].state = "black";
-    diskList[m+1][m].state = "black";
+    diskList[m + 1][m + 1].state = "white";
+    diskList[m][m + 1].state = "black";
+    diskList[m + 1][m].state = "black";
 
     NumberOfBlack = 2;
     NumberOfWhite = 2;
@@ -424,6 +460,7 @@ function resetGame() {
     stopGame();
     startLoop();
     newGame();
+    overwriteGameInfo("Game has reset.");
 }
 
 // Start a new game
@@ -431,7 +468,7 @@ newGame();
 
 // Set up the game loop
 function startLoop() {
-    runningLoop = setInterval(loop, 1000/FPS);
+    runningLoop = setInterval(loop, 1000 / FPS);
 }
 
 var runningLoop;
@@ -444,5 +481,4 @@ function loop() {
     drawDisks(); // draw the active disk
     drawText(); // draw the top hud
     // 2 mouse events : click (-> place a disk) and mousemove (-> highlight if possible)
-    checkForWin();
 }

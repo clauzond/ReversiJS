@@ -8,6 +8,9 @@
     </head>
 
     <body>
+        <div id="infoContainer" align="center">
+        </div>
+
         <div id="buttonContainer" align="center">
             <button class="button" id="reset">Reset</button>
             <button class="button" id="rules">Rules</button>
@@ -64,17 +67,17 @@
             var rulesButton = document.getElementById("rules");
             var optionsButton = document.getElementById("options");
             var githubButton = document.getElementById("github");
-            var rulesContainer = document.getElementById("rulesContainer")
-            var optionsContainer = document.getElementById("optionsContainer")
+            var rulesContainer = document.getElementById("rulesContainer");
+            var optionsContainer = document.getElementById("optionsContainer");
+            var infoContainer = document.getElementById("infoContainer");
 
             function _reset() {
+                hideInfo();
                 resetGame();
             }
 
             function showRules() {
-                optionsContainer.style.display = "none";
-                optionsButton.classList.remove('activeButton');
-
+                hideOptions()
                 if (rulesContainer.style.display == "none") {
                     rulesContainer.style.display = "block";
                     rulesButton.classList.add('activeButton');
@@ -85,9 +88,7 @@
             }
 
             function showOptions() {
-                rulesContainer.style.display = "none";
-                rulesButton.classList.remove('activeButton');
-
+                hideRules()
                 if (optionsContainer.style.display == "none") {
                     optionsContainer.style.display = "flex";
                     optionsButton.classList.add('activeButton');
@@ -95,6 +96,20 @@
                     optionsContainer.style.display = "none";
                     optionsButton.classList.remove('activeButton');
                 }
+            }
+
+            function hideOptions() {
+                optionsContainer.style.display = "none";
+                optionsButton.classList.remove('activeButton');
+            }
+
+            function hideRules() {
+                rulesContainer.style.display = "none";
+                rulesButton.classList.remove('activeButton');
+            }
+
+            function hideInfo() {
+                infoContainer.innerHTML = "";
             }
 
             resetButton.onclick = _reset;

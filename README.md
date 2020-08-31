@@ -13,11 +13,15 @@ To learn HTML, CSS and JS
 
 ## Todo ⏳
 
-- [ ] Add more information on win (e.g "White cannot play") 🎭
-- [ ] Interface to show move name (and function to record move list, and play move list) 📃
 - [ ] Find a pattern for odd GRID_SIZE 5️⃣7️⃣9️⃣
-- [ ] Implement an AI 🤖
+- [ ] Interface to show move name, function to record move list and to play move list 📃
+    - [ ] Interface to show move
+    - [x] Register moves
+    - [ ] Play move list
 - [ ] Play with another human online 👬
+- [ ] Implement an AI 🤖
+    - [ ] Simple AI
+    - [ ] Train AI (Deep learning with NEAT)
 
 ## Done ✔ 
 
@@ -32,3 +36,4 @@ To learn HTML, CSS and JS
 	- [x] Hightlight mousehover 🌟
 	- [x] Hightlight captured disks before playing ✨
     - [x] Highlight possible moves ✨🌟✨
+- [x] Add more information on win (e.g "White cannot play") 🎭
